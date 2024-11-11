@@ -138,10 +138,19 @@ class PromotionService {
   }
 
   displayReceipt() {
-    Console.print('');
-    Console.print('==============W 편의점================');
-    Console.print('상품명\t\t수량\t금액');
+    this.printHeader();
+    const { totalQuantity, totalCostWithFreeItems } = this.printCartItems();
+    this.printFreeItems();
+    this.printTotals(totalQuantity, totalCostWithFreeItems);
+    this.printFinalAmount(totalCostWithFreeItems);
+  }
 
+  printHeader() {
+    Console.print('\n==============W 편의점================');
+    Console.print('상품명\t\t수량\t금액');
+  }
+
+  printCartItems() {
     let totalQuantity = 0;
     let totalCostWithFreeItems = 0;
 
@@ -158,26 +167,35 @@ class PromotionService {
       );
     });
 
+    return { totalQuantity, totalCostWithFreeItems };
+  }
+
+  printFreeItems() {
     Console.print('=============증\t정=============');
     this.freeItems.forEach(({ name, quantity }) => {
       Console.print(`${name}\t\t${quantity}`);
     });
+  }
 
+  printTotals(totalQuantity, totalCostWithFreeItems) {
     Console.print('====================================');
     Console.print(
       `총구매액\t\t${totalQuantity}\t${totalCostWithFreeItems.toLocaleString()}`,
     );
     Console.print(`행사할인\t\t\t-${this.promotionDiscount.toLocaleString()}`);
+    Console.print(
+      `멤버십할인\t\t\t-${
+        this.isMembershipApplied
+          ? this.membershipDiscount.toLocaleString()
+          : '0'
+      }`,
+    );
+  }
 
-    if (this.isMembershipApplied) {
-      Console.print(
-        `멤버십할인\t\t\t-${this.membershipDiscount.toLocaleString()}`,
-      );
-    }
-
+  printFinalAmount(totalCostWithFreeItems) {
     const finalAmount =
       totalCostWithFreeItems - this.promotionDiscount - this.membershipDiscount;
-    Console.print(`내실돈\t\t\t ${finalAmount.toLocaleString()}\n`);
+    Console.print(`내실돈\t\t\t${finalAmount.toLocaleString()}\n`);
   }
 
   calculateDiscounts() {
