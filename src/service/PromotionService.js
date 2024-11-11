@@ -3,7 +3,6 @@ import ProductParser from '../parsers/ProductParser.js';
 import PromotionParser from '../parsers/PromotionParser.js';
 import PromotionInput from '../view/PromotionInput.js';
 import MembershipInput from '../view/MembershipInput.js';
-import ProductValidator from '../utils/ProductValidator.js';
 
 class PromotionService {
   constructor() {
