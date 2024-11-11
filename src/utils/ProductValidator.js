@@ -10,7 +10,7 @@ class ProductValidator {
     const validatedProducts = extractedProduct.map((prod) => {
       const match = this.#validateRegex(prod);
       this.#checkNameExists(data, match[1]);
-      this.#checkQuantityExceeds(data, match[1], parseInt(match[2], 10));
+      this.#checkTotalStock(data, match[1], parseInt(match[2], 10));
       return { name: match[1], quantity: parseInt(match[2], 10) };
     });
     return validatedProducts;
@@ -36,13 +36,20 @@ class ProductValidator {
     }
   }
 
-  static #checkQuantityExceeds(data, productName, inputQuantity) {
-    const productData = data.find((item) => item.name === productName);
-    if (
-      productData &&
-      productData.promotion === 'null' &&
-      inputQuantity > productData.quantity
-    ) {
+  static #checkTotalStock(data, productName, inputQuantity) {
+    const promotionProduct = data.find(
+      (item) => item.name === productName && item.promotion !== 'null',
+    );
+    const generalProduct = data.find(
+      (item) => item.name === productName && item.promotion === 'null',
+    );
+
+    let totalAvailableStock = 0;
+
+    if (promotionProduct) totalAvailableStock += promotionProduct.quantity;
+    if (generalProduct) totalAvailableStock += generalProduct.quantity;
+
+    if (inputQuantity > totalAvailableStock) {
       throw new Error(
         '[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.',
       );
@@ -54,7 +61,7 @@ class ProductValidator {
       ? {
           validateRegex: ProductValidator.#validateRegex,
           checkNameExists: ProductValidator.#checkNameExists,
-          checkQuantityExceeds: ProductValidator.#checkQuantityExceeds,
+          checkQuantityExceeds: ProductValidator.#checkTotalStock,
         }
       : null;
 }
