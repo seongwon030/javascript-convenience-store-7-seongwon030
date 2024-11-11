@@ -234,9 +234,11 @@ class PromotionService {
     const existingCartItem = this.cart.find((item) => item.name === name);
     if (existingCartItem) {
       existingCartItem.quantity += quantity;
-    } else {
-      this.cart.push({ name, quantity, price });
+      this.totalPrice += quantity * price;
+      return;
     }
+
+    this.cart.push({ name, quantity, price });
     this.totalPrice += quantity * price;
   }
 
