@@ -199,35 +199,30 @@ class PromotionService {
   }
 
   calculateDiscounts() {
-    this.promotionDiscount = this.calculatePromotionDiscount();
-    const nonPromotionTotal = this.calculateNonPromotionTotal();
-
-    if (this.isMembershipApplied) {
-      const calculatedDiscount = Math.floor(nonPromotionTotal * 0.3);
-      this.membershipDiscount = Math.min(calculatedDiscount, 8000);
-    }
-  }
-
-  calculatePromotionDiscount() {
-    return this.freeItems.reduce(
+    this.promotionDiscount = this.freeItems.reduce(
       (acc, item) =>
         acc +
         item.quantity *
           this.cart.find((cartItem) => cartItem.name === item.name).price,
       0,
     );
-  }
 
-  calculateNonPromotionTotal() {
-    return this.cart.reduce((acc, { name, quantity, price }) => {
-      const isPromotional = this.promotions.some(
-        (promotion) =>
-          promotion.name ===
-          this.promotionProducts.find((product) => product.name === name)
-            ?.promotion,
-      );
-      return isPromotional ? acc : acc + quantity * price;
-    }, 0);
+    const nonPromotionTotal = this.cart.reduce(
+      (acc, { name, quantity, price }) => {
+        const isPromotional = this.promotions.some(
+          (promotion) =>
+            promotion.name ===
+            this.promotionProducts.find((product) => product.name === name)
+              ?.promotion,
+        );
+        return isPromotional ? acc : acc + quantity * price;
+      },
+      0,
+    );
+
+    if (this.isMembershipApplied) {
+      this.membershipDiscount = Math.floor(nonPromotionTotal * 0.3);
+    }
   }
 
   addToCart(name, quantity, price) {
