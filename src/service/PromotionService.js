@@ -93,15 +93,6 @@ class PromotionService {
                 product.promotion === 'null',
             );
 
-            if (
-              !generalStockProduct ||
-              generalStockProduct.quantity < quantityToCharge
-            ) {
-              throw new Error(
-                `[ERROR] ${inputProduct.name}의 일반 재고가 부족합니다.`,
-              );
-            }
-
             generalStockProduct.quantity -= quantityToCharge;
             await ProductParser.updateNonPromotionQuantity(
               inputProduct.name,
